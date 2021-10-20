@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Casting : MonoBehaviour
 {
-    public List<AudioClip>Sounds = new List<AudioClip>();// 0 Open // 1 Close
+    public List<AudioClip>Sounds = new List<AudioClip>();// Drawer 0 Open, 1 Close // Drawer2 2Open, 3Close
     public static int Value;
     private Movescript Script_Move;
     public Text GravityText;
@@ -35,7 +35,7 @@ public class Casting : MonoBehaviour
     void Start()
     {
         OnBoxhand = false;
-        Cam = FindObjectOfType<Camera>();
+        Cam = gameObject.GetComponentInChildren<Camera>();
         Cam = Cam.GetComponent<Camera>();
         OnRandomForce = Random.Range(600, 800);// Fuerza aleatoria de 600 a 800      
     }
@@ -69,8 +69,11 @@ public class Casting : MonoBehaviour
                 else if (Col.collider.tag == "Puerta")
                 {
                     if (Llave)
-                    {                        
+                    {
                         Doorbool = !Doorbool;
+                        AudioSource Door;
+                        Door = Col.collider.GetComponent<AudioSource>();
+                        Door.Play();    
                         Animators[0] = Col.collider.gameObject.GetComponent<Animator>();
                         Animators[0].SetBool("Door",Doorbool);                      
                     }
@@ -104,14 +107,34 @@ public class Casting : MonoBehaviour
                 }
                 else if (Col.collider.tag == "Armario")
                 {
+                    AudioSource ArmSound;
+                    ArmSound = Col.collider.gameObject.GetComponent<AudioSource>();
                     Animators[2] = Col.collider.gameObject.GetComponentInParent<Animator>();
                     Armario = !Armario;
                     Animators[2].SetBool("sak", Armario);
+                    if (MuebleBool != false)
+                    {
+                        ArmSound.PlayOneShot(Sounds[2]);
+                    }
+                    else
+                    {
+                        ArmSound.PlayOneShot(Sounds[3]);
+                    }
                 }
                 else if (Col.collider.tag == "FlashLight")
                 {
                     Movescript.OnFlashLightCondition();
                     Destroy(Col.collider.gameObject);
+                }
+                else if (Col.collider.tag == "Cer")
+                {
+                    Pause.Cer++;
+                    Destroy(Col.collider.gameObject);
+                }
+                else if (Col.collider.tag == "BedroomStatement")
+                {
+                    Pause.Cer++;
+                    Pause.BedroomCamera.SetActive(true);
                 }
             }
             else
@@ -130,7 +153,7 @@ public class Casting : MonoBehaviour
             ObjectsPick.collisionDetectionMode = CollisionDetectionMode.Continuous;
             if (Col.collider.tag == "Cube" || Col.collider.tag == "Sphere")
             {
-                //IfComponentNull();// Llama al metodo IfComponentNull y comprueba el estado del componente
+                //IfComponentNull();// Llama al metodo IfComponentNull y comprueba el estado del componente si no hay nada vacia el objeto padre
                 Col.collider.gameObject.transform.position = Posicionador.transform.position;
                 ObjectsPick.velocity = Vector3.zero;// no obtiene Velocidad osea le asigna velocidad 0;
                 Col.collider.gameObject.transform.LookAt(Player.transform.position);// Asigna a la Inteligencia artificial Un punto visual que es el personaje      
