@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Pause : MonoBehaviour
 {
     //Codigo Incompleto
+    public static GameObject BedroomCamera;
+    public Text TextCers;
     public static bool OnPause;
     private GameObject PauseObJ;
     public static GameObject Canvaslose;
@@ -15,6 +19,11 @@ public class Pause : MonoBehaviour
     private TextSizer Txg;
     public AudioClip JumpsCares;
     public static GameObject CanvasDie;
+    private GameObject[]Cers;
+    [SerializeField] private bool OnMissionLayer;
+    public Animator MissionLayer;
+    public static int Cer {get; set;}
+    private Animation AnimationFinal;
     private void Awake()
     {
         PauseObJ = GameObject.Find("Pause");
@@ -24,12 +33,38 @@ public class Pause : MonoBehaviour
         Canvaslose.SetActive(false);
         CanvasDie = GameObject.Find("CanvasDie");
         CanvasDie.SetActive(false);
+        Cers = GameObject.FindGameObjectsWithTag("Cer");
     }
+
+    private void Start()
+    {
+        TextCers.CrossFadeAlpha(0,0.96f,true);
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && Movescript.OnAnimationStart == false)
         {
             OnPause = !OnPause;     
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q) && OnPause != true)
+        {
+            OnMissionLayer = !OnMissionLayer;
+            MissionLayer.SetBool("OnMissionLayer",OnMissionLayer);
+        }
+        if (Casting.Llave)
+        {
+            string cs;
+            cs = Cers.Length.ToString();
+            TextCers.CrossFadeAlpha(1,0.96f,true);
+            TextCers.text = Cer+"/"+ Cers.Length;
+        }
+        if (Cer == Cers.Length)
+        {
+            TextCers.CrossFadeAlpha(0, 2f, true);
+            Movescript.OnAnimationStart = true;
+            AnimationFinal.Play();
         }
          OnPauseGame();
     }

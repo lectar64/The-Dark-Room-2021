@@ -15,7 +15,7 @@ public class Menu : MonoBehaviour
     private GameObject Options;
     //Component Options
     public enum StateMenu {GameTitle,Options,GameSelector,Credits,Quit};
-    private StateMenu St_GameMenuManagement;
+    [SerializeField] StateMenu St_GameMenuManagement;
     public Slider SliderVGA;// Slider Para Los Graficos 
     public int SaveConf;
     public static string[] GraficosArrays = { "Very Low", "Low", "Medium", "High" };
@@ -73,7 +73,7 @@ public class Menu : MonoBehaviour
                 QualitySettings.SetQualityLevel(SaveConf);
                 Options_txt.text = "Options : Low";
             }
-             if(SliderVGA.value > 0.4) 
+            if(SliderVGA.value > 0.4) 
             {
                 Options_txt = Options.GetComponent<Text>();
                 PlayerPrefs.SetFloat("ValueHandle", SliderVGA.value);
