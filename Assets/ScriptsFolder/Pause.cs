@@ -29,20 +29,20 @@ public class Pause : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            OnPause = !OnPause;     
+            OnPause = !OnPause;//el booleano tomara el valor contrario a su valor original     
         }
          OnPauseGame();
     }
     public void OnPauseGame()//Pausa
     {
-        if (OnPause && IA.AgentBool != false)
+        if (OnPause && IA.AgentBool != false)//Si esta pausado el juego y el booleano que determina el movimiento del enemigo es verdadero, se iniciara el pausa
         {
             PauseObJ.SetActive(true);
             Time.timeScale = 0;
             Movescript.OnCamPos = false;
             Txg.gameObject.SetActive(false);
         }
-        else if (OnPause == false && IA.AgentBool != false)
+        else if (OnPause == false && IA.AgentBool != false)//Si es falso el booleano de pausa el juego unicamente desactivara el pausa
         {
             PauseObJ.SetActive(false);
             Time.timeScale = 1;
