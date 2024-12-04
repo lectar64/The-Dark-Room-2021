@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using BedCameraUtilities;
 
 public class Movescript : MonoBehaviour
 {
@@ -14,10 +17,10 @@ public class Movescript : MonoBehaviour
     private float speed = 85;
     private float Limit;
     //KeyBoard
-    private float Horizontal;
-    private float Vertical;
-    private float speedWalk = 2.5f;
-    private float speedRun = 7;
+    [SerializeField] float Horizontal;
+    [SerializeField] private float Vertical;
+    [SerializeField] private float speedWalk = 2.5f;
+    [SerializeField] private float speedRun = 7;
     private Rigidbody Rb;
     float Value;
     public bool ItsRunning;
@@ -40,6 +43,10 @@ public class Movescript : MonoBehaviour
     public Material ChangeMaterial;
     private Renderer RenderMaterial;
     public static bool FlashLightCns, OnPlayermove;
+    private Outline[] RenderLines;
+    [SerializeField] private string [] tags = {"Key","FlashLight"};
+    public static bool OnAnimationStart;
+    [SerializeField] private Canvas [] PlayerObjects;
     private void Awake()
     {
         csObjects[0] = GameObject.Find("Linterna_3DS");
@@ -50,24 +57,48 @@ public class Movescript : MonoBehaviour
         Application.targetFrameRate = 144;
         Pos = GameObject.Find("Posicionador");
         Rb = gameObject.GetComponent<Rigidbody>();
-        MainCam = FindObjectOfType<Camera>().GetComponent<Camera>();
+        MainCam = this.gameObject.GetComponentInChildren<Camera>();
         Hand = false;
         Flash = false;
         OnCamPos = true;
         FlashLight = gameObject.GetComponentInChildren<Light>();
         FlashLight.enabled = Flash;
+        RenderLines = FindObjectsOfType<Outline>();
+        for (int i = 0; i < RenderLines.Length; i++)
+        {
+            RenderLines[i].enabled = false;
+        }
+        PlayerObjects = this.gameObject.GetComponentsInChildren<Canvas>();
     }
     private void Update()
     {
+        AnimationStarts();
         MouseLocked();        
         Movement();
-        if (Input.GetKeyDown(KeyCode.R))
+        RenderLines = FindObjectsOfType<Outline>();
+    }
+    public void AnimationStarts()
+    {
+        if (OnAnimationStart)
         {
-            SceneManager.LoadSceneAsync("Room-2");
+            MainCam.enabled = false;
+            for (int i = 0; i < PlayerObjects.Length; i++)
+            {
+                PlayerObjects[i].enabled = false;
+            }
+        }
+        else
+        {
+            MainCam.enabled = true;
+            for (int i = 0; i < PlayerObjects.Length; i++)
+            {
+                PlayerObjects[i].enabled = true;
+            }
         }
     }
     public void Movement()
-    {  if (Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.D)|| Input.GetKey(KeyCode.A))
+    {
+        if (Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.D)|| Input.GetKey(KeyCode.A))
         {
             Animator.SetBool("Walk", true);
             Animator.SetBool("Back", false);
@@ -98,6 +129,7 @@ public class Movescript : MonoBehaviour
         if (Physics.Raycast(rayo,out Golpe,2))
         {
             CrosshairStates();
+            RenderMethod();
         }
         else
         {
@@ -109,8 +141,8 @@ public class Movescript : MonoBehaviour
         Limit -= Y*speed*Time.deltaTime;
         if (OnCamPos)// si no esta en pausa la camara se sigue moviendo 
         {
-           X = Input.GetAxis("Mouse X");
-           Y = Input.GetAxis("Mouse Y");
+            X = Input.GetAxis("Mouse X");
+            Y = Input.GetAxis("Mouse Y");
         }
         else
         {
@@ -139,14 +171,6 @@ public class Movescript : MonoBehaviour
             Flash = true;
             FlashLight.enabled = Flash;
         }
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "House")
-        {
-           FlashLightCns = false;
-           return;
-        }    
     }
     private void OnCollisionExit(Collision collision)
     {
@@ -188,6 +212,43 @@ public class Movescript : MonoBehaviour
         else
         {
             Crosshair.color = Color.white;
+        }
+    }
+
+    public void RenderMethod()
+    {
+        for (int i = 0; i < RenderLines.Length; i++)
+        {
+            if (RenderLines[i] != null)
+            {
+                if (Golpe.collider.CompareTag("Key") || Golpe.collider.CompareTag("FlashLight") || Golpe.collider.CompareTag("Puerta") && Casting.Llave != true || Golpe.collider.CompareTag("Cer") || Golpe.collider.CompareTag("Cer"))
+                {
+                    Outline V;
+                    V = Golpe.collider.gameObject.GetComponent<Outline>();
+                    V.enabled = true;
+                }
+                else if(Golpe.collider.CompareTag("Puerta") && Casting.Llave)
+                {
+                    Outline V;
+                    V = Golpe.collider.gameObject.GetComponent<Outline>();
+                    V.OutlineColor = Color.green;
+                    V.enabled = true;
+                }
+                else if (Golpe.collider.CompareTag("DoorAnimation"))
+                {
+                    Outline V;
+                    V = Golpe.collider.gameObject.GetComponent<Outline>();
+                    V.OutlineColor = Color.red;
+                    V.enabled = true;
+                }
+                else
+                {
+                    for (int j = 0; j < RenderLines.Length; j++)
+                    {
+                        RenderLines[i].enabled = false;
+                    }
+                }         
+            }
         }
     }
 }
