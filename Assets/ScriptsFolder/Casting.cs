@@ -110,7 +110,7 @@ public class Casting : MonoBehaviour
                 }
                 else if (Col.collider.tag == "FlashLight")
                 {
-                    Movescript.OnFlashLightCondition();
+                    Movescript.OnFlashLightCondition();// llama funcion
                     Destroy(Col.collider.gameObject);
                 }
             }
@@ -148,7 +148,7 @@ public class Casting : MonoBehaviour
             ObjectsPick = null;
         }
     }
-    public void OntrowObject()
+    public void OntrowObject()// Tirar Objeto
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
