@@ -157,7 +157,7 @@ public class Casting : MonoBehaviour
             ObjectsPick.AddForce(rayo.direction * OnRandomForce); 
         }
     }
-    public void IfComponentNull()
+    public void IfComponentNull()// está función comprueba si tiene o no el componente
     {
         if (Col.collider.tag == "Cube")
         {
